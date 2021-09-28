@@ -1,22 +1,36 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
+    <h2>TradeNet - TradeStation</h2>
     <label for="ticker-input">Search: </label>
     <input v-on:keyup.enter="handleSubmit" type="text" id="ticker-input" v-model="tickerSearch">
+    <label for="chart-input">Chart: </label>
     <input type="text" id="chart-input" v-model="currChart">
-    <trading-vue :data="this.charts[0]" :width="width" :height="height"
-        :title-txt="this.titles[0]"
-        :toolbar="true"
-        :overlays="overlays"
-       >
-    </trading-vue>
-    <hr>
-    <trading-vue :data="this.charts[1]" :width="width" :height="height"
-        :title-txt="this.titles[1]"
-        :toolbar="true"
-        :overlays="overlays"
-       >
-    </trading-vue>
+    <div>
+      <trading-vue :data="this.charts[0]" :width="width" :height="height"
+          :title-txt="this.titles[0]"
+          :toolbar="true"
+          :overlays="overlays">
+      </trading-vue>
+      
+      <trading-vue :data="this.charts[1]" :width="width" :height="height"
+          :title-txt="this.titles[1]"
+          :toolbar="true"
+          :overlays="overlays">
+      </trading-vue>
+      
+      <trading-vue :data="this.charts[2]" :width="width" :height="height"
+          :title-txt="this.titles[2]"
+          :toolbar="true"
+          :overlays="overlays">
+      </trading-vue>
+      
+      <trading-vue :data="this.charts[3]" :width="width" :height="height"
+          :title-txt="this.titles[3]"
+          :toolbar="true"
+          :overlays="overlays">
+      </trading-vue>
+    </div>
+   
   </div>
 </template>
 
@@ -38,7 +52,7 @@ export default {
             currChart:0,
             currentTicker:'',
             titles:{},
-            charts: [new DataCube([Data]), new DataCube(Data)],
+            charts: [new DataCube([Data]), new DataCube(Data),new DataCube([Data]),new DataCube([Data])],
             overlays: [TestOverlay]
         }
     },
@@ -77,6 +91,8 @@ export default {
      TradeNetDataService.getCryptoPairs();
       this.getQuickchart(0,'HUT');
       this.getQuickchart(1,'QQQ');
+      this.getQuickchart(2,'SPY');
+      this.getQuickchart(3,'BTCUSDT');
       this.tickerSearch='HUT'
     }
 }
@@ -90,5 +106,12 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.trading-vue{
+  display:block;
+  float:left;
+  width:45% !important;
+  margin-bottom:1em;
+  padding:0px;
 }
 </style>
