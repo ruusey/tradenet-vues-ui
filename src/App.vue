@@ -98,25 +98,22 @@ export default {
     },
     mounted(){
      TradeNetAccountService.accountByEmail('ru@trade.net').then(res => {
-                     this.account=res
-
-              }).catch(err => {
-                     console.log(err)
-              }).finally(()=>{
-                            TradeNetAccountService.setAuth(this.account.accountGuid);
-
-              })
-     
+          this.account=res
+        }).catch(err => {
+          console.log(err)
+        }).finally(()=>{
+          TradeNetAccountService.setAuth(this.account.accountGuid);
+        })
       this.getQuickchart(0,'HUT');
       this.getQuickchart(1,'QQQ');
       this.getQuickchart(2,'SPY');
       this.getQuickchart(3,'BTCUSDT');
       this.tickerSearch='HUT'
-       TradeNetAccountService.accountBalance().then(res => {
-       this.balances=res
-              }).catch(err => {
-                     console.log(err)
-              })
+      TradeNetAccountService.accountBalance().then(res => {
+          this.balances=res
+        }).catch(err => {
+          console.log(err)
+        })
     }
 }
 </script>
