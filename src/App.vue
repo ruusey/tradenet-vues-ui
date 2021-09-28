@@ -2,7 +2,7 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <label for="ticker-input">Search: </label>
-    <input v-on:keyup.enter="handleSubmit" type="text" id="ticker-input" v-model="ticker">
+    <input v-on:keyup.enter="handleSubmit" type="text" id="ticker-input" v-model="tickerSearch">
     <input type="text" id="chart-input" v-model="currChart">
     <trading-vue :data="this.charts[0]" :width="width" :height="height"
         :title-txt="this.titles[0]"
@@ -34,15 +34,18 @@ export default {
     },
     data() {
         return {
+            tickerSearch:'',
             currChart:0,
-            ticker:'AAPL',
-            titles:['AAPL','BTCUSDT'],
+            currentTicker:'',
+            titles:{},
             charts: [new DataCube([Data]), new DataCube(Data)],
             overlays: [TestOverlay]
         }
     },
     methods:{
       getQuickchart(id, symbol){
+        this.titles[id]=symbol
+        this.currentTicker = symbol;
         var candles = [];
          TradeNetDataService.quickchart(symbol).then(res => {
               for (var i = 0; i < res.length; i++){
@@ -52,12 +55,12 @@ export default {
               }}).catch(err => {
                      console.log(err)
               })
-        this.titles[id]=symbol;
         this.charts[id].set('chart.data', candles);
       },
       handleSubmit(){
+        this.titles[this.currChart]=this.tickerSearch;
         var candles = [];
-         TradeNetDataService.quickchart(this.ticker).then(res => {
+         TradeNetDataService.quickchart(this.tickerSearch).then(res => {
               for (var i = 0; i < res.length; i++){
                     let obj = res[i];
                     let ohlc = [new Date(obj['datetime']).getTime(),obj['open'],obj['high'],obj['low'],obj['close'],obj['volume']];
@@ -65,13 +68,16 @@ export default {
               }}).catch(err => {
                      console.log(err)
               })
-        this.titles[this.currChart]=this.ticker;
+
         this.charts[this.currChart].set('chart.data', candles);
+
       }
     },
     mounted(){
-      this.getQuickchart(0,'AAPL');
-      this.getQuickchart(1,'BTCUSDT')
+     TradeNetDataService.getCryptoPairs();
+      this.getQuickchart(0,'HUT');
+      this.getQuickchart(1,'QQQ');
+      this.tickerSearch='HUT'
     }
 }
 </script>

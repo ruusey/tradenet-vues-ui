@@ -1,8 +1,6 @@
 import api from './api.js';
 
-/**
- * Company service wrapper (both Lessees and ServiceProviders are companies)
- */
+
 class TradeNetDataService {
     /**
      * Constructor
@@ -13,49 +11,34 @@ class TradeNetDataService {
         this.url_client = 'quickchart';
     }
 
-    /**
-     * Get Lessees, params can include pagination and offset
-     * @param {*} params
-     * @return {Promise}
-     */
+    
     quickchart(symbol) {
-        return api.get(`${this.url_client}/${symbol}`, {});
+        return api.get(`quickchart/${symbol}`, {});
     }
 
-    /**
-     * Get LesseeEdit by id
-     * @param id
-     * @return {Promise}
-     */
-    get(id){
-        return api.get(`${this.url_client}/${id}`);
+    
+    getCryptoPairs(){
+        return api.get(`crypto/pairs/binance`,{});
     }
 
-    /**
-     * Update Lessees
-     * @param {*} data
-     * @return {Promise}
-     */
-    update(data) {
-        return api.put(`${this.url_client}/${data.id}`, data);
+    getCryptoStats24Hr(){
+        return api.get(`crypto/info/binance`,{});
     }
 
-    /**
-     * Create LesseeEdit
-     * @param {*} data
-     * @return {Promise}
-     */
-    create(data){
-        return api.post(this.url_client, data);
+    
+    getCryptoQuote(symbol) {
+        return api.get(`crypto/quote/${symbol}`, {});
     }
 
-    /**
-     * Destroy LesseeEdit
-     * @param String id
-     * @return {Promise}
-     */
-    destroy(data){
-        return api.delete(`${this.url_client}/${data.id}`);
+    getStockQuote(symbol) {
+        return api.get(`stocks/tda/quote/${symbol}`, {});
     }
+
+
+    getStockFundamental(symbol){
+        return api.get(`fundamental/tda/${symbol}`, {});
+    }
+
+    
 }
 export default new TradeNetDataService;
