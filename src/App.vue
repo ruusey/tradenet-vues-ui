@@ -1,6 +1,13 @@
 <template>
   <div id="app">
-    <h2>TradeNet - TradeStation</h2>
+    <h1>TradeNet - TradeStation</h1>
+    <div id="account-info">
+      <h3>Account: {{this.account.email}}</h3>
+      <h3>{{this.account.accountName}}</h3>
+      <h3 v-if="this.balances[0]">Balance: {{this.balances[0].cashAvailableForTrading}}</h3>
+    </div>
+    
+    
     <label for="ticker-input">Search: </label>
     <input v-on:keyup.enter="handleSubmit" type="text" id="ticker-input" v-model="tickerSearch">
     <label for="chart-input">Chart: </label>
@@ -37,7 +44,7 @@
 <script>
 import { DataCube } from 'trading-vue-js'
 import Data from './assets/data.json'
-//import HelloWorld from './components/HelloWorld.vue';
+import TradeNetAccountService from './services/tradenet-account.js';
 import TestOverlay from './components/TestOverlay.vue'
 import TradeNetDataService from './services/tradenet-data.js'
 export default {
@@ -48,6 +55,8 @@ export default {
     },
     data() {
         return {
+            account:{},
+            balances:[],
             tickerSearch:'',
             currChart:0,
             currentTicker:'',
@@ -88,12 +97,26 @@ export default {
       }
     },
     mounted(){
-     TradeNetDataService.getCryptoPairs();
+     TradeNetAccountService.accountByEmail('ru@trade.net').then(res => {
+                     this.account=res
+
+              }).catch(err => {
+                     console.log(err)
+              }).finally(()=>{
+                            TradeNetAccountService.setAuth(this.account.accountGuid);
+
+              })
+     
       this.getQuickchart(0,'HUT');
       this.getQuickchart(1,'QQQ');
       this.getQuickchart(2,'SPY');
       this.getQuickchart(3,'BTCUSDT');
       this.tickerSearch='HUT'
+       TradeNetAccountService.accountBalance().then(res => {
+       this.balances=res
+              }).catch(err => {
+                     console.log(err)
+              })
     }
 }
 </script>
@@ -113,5 +136,8 @@ export default {
   width:45% !important;
   margin-bottom:1em;
   padding:0px;
+}
+#account-info{
+  text-align:left;
 }
 </style>

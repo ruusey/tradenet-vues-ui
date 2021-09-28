@@ -14,12 +14,16 @@ class Api {
 
         return 'http://192.168.1.240:8081/tradenet';
     }
+    setAuthHeader(guid){
+        axios.defaults.headers.common['account-guid'] = guid;
+    }
     //
     /**
      * Get
      * @param {string} endpoint
      * @param {*} params
      */
+    
     get(endpoint, params = {}) {
         return new Promise((resolve, reject) => {
             axios({url: `${this.base_url}/${endpoint}`, params, method: 'GET' }).then(res => {
