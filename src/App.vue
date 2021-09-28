@@ -2,9 +2,17 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <label for="ticker-input">Search: </label>
-    <input v-on:keyup.enter="getQuickchart" type="text" id="ticker-input" v-model="ticker">
-    <trading-vue :data="this.chart" :width="width" :height="height"
-        :title-txt="this.chartTitle"
+    <input v-on:keyup.enter="handleSubmit" type="text" id="ticker-input" v-model="ticker">
+    <input type="text" id="chart-input" v-model="currChart">
+    <trading-vue :data="this.charts[0]" :width="width" :height="height"
+        :title-txt="this.titles[0]"
+        :toolbar="true"
+        :overlays="overlays"
+       >
+    </trading-vue>
+    <hr>
+    <trading-vue :data="this.charts[1]" :width="width" :height="height"
+        :title-txt="this.titles[1]"
         :toolbar="true"
         :overlays="overlays"
        >
@@ -26,32 +34,44 @@ export default {
     },
     data() {
         return {
+            currChart:0,
             ticker:'AAPL',
-            chartTitle:'TradeNet Chahts',
-            candles:[],
-            chart: new DataCube(
-              Data
-            ),
+            titles:['AAPL','BTCUSDT'],
+            charts: [new DataCube([Data]), new DataCube(Data)],
             overlays: [TestOverlay]
         }
     },
     methods:{
-      getQuickchart(){
-        this.candles = [];
+      getQuickchart(id, symbol){
+        var candles = [];
+         TradeNetDataService.quickchart(symbol).then(res => {
+              for (var i = 0; i < res.length; i++){
+                    let obj = res[i];
+                    let ohlc = [new Date(obj['datetime']).getTime(),obj['open'],obj['high'],obj['low'],obj['close'],obj['volume']];
+                    candles.push(ohlc);
+              }}).catch(err => {
+                     console.log(err)
+              })
+        this.titles[id]=symbol;
+        this.charts[id].set('chart.data', candles);
+      },
+      handleSubmit(){
+        var candles = [];
          TradeNetDataService.quickchart(this.ticker).then(res => {
               for (var i = 0; i < res.length; i++){
                     let obj = res[i];
                     let ohlc = [new Date(obj['datetime']).getTime(),obj['open'],obj['high'],obj['low'],obj['close'],obj['volume']];
-                    this.candles.push(ohlc);
+                    candles.push(ohlc);
               }}).catch(err => {
                      console.log(err)
               })
-        this.chartTitle = this.ticker;
-        this.chart.set('chart.data', this.candles);
+        this.titles[this.currChart]=this.ticker;
+        this.charts[this.currChart].set('chart.data', candles);
       }
     },
     mounted(){
-      this.getQuickchart(this.ticker)
+      this.getQuickchart(0,'AAPL');
+      this.getQuickchart(1,'BTCUSDT')
     }
 }
 </script>
