@@ -7,7 +7,6 @@
       <h3 v-if="this.balances[0]">Balance: {{this.balances[0].cashAvailableForTrading}}</h3>
     </div>
     
-    
     <label for="ticker-input">Search: </label>
     <input v-on:keyup.enter="handleSubmit" type="text" id="ticker-input" v-model="tickerSearch">
     <label for="chart-input">Chart: </label>
@@ -37,7 +36,6 @@
           :overlays="overlays">
       </trading-vue>
     </div>
-   
   </div>
 </template>
 
@@ -91,9 +89,7 @@ export default {
               }}).catch(err => {
                      console.log(err)
               })
-
         this.charts[this.currChart].set('chart.data', candles);
-
       }
     },
     mounted(){
@@ -102,18 +98,19 @@ export default {
         }).catch(err => {
           console.log(err)
         }).finally(()=>{
+          console.log(this.account.accountGuid)
           TradeNetAccountService.setAuth(this.account.accountGuid);
+          TradeNetAccountService.accountBalance().then(res => {
+          this.balances=res
+        }).catch(err => {
+          console.log(err)
         })
+      })
       this.getQuickchart(0,'HUT');
       this.getQuickchart(1,'QQQ');
       this.getQuickchart(2,'SPY');
       this.getQuickchart(3,'BTCUSDT');
       this.tickerSearch='HUT'
-      TradeNetAccountService.accountBalance().then(res => {
-          this.balances=res
-        }).catch(err => {
-          console.log(err)
-        })
     }
 }
 </script>
