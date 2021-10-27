@@ -45,6 +45,8 @@ import Data from './assets/data.json'
 import TradeNetAccountService from './services/tradenet-account.js';
 import TestOverlay from './components/TestOverlay.vue'
 import TradeNetDataService from './services/tradenet-data.js'
+import SockJS from "sockjs-client";
+import Stomp from "webstomp-client";
 export default {
     name: 'App',
     props: ['width', 'height', 'colors'],
@@ -60,7 +62,9 @@ export default {
             currentTicker:'',
             titles:{},
             charts: [new DataCube([Data]), new DataCube(Data),new DataCube([Data]),new DataCube([Data])],
-            overlays: [TestOverlay]
+            overlays: [TestOverlay],
+            socket: null,
+            stompClient: null
         }
     },
     methods:{
@@ -92,7 +96,31 @@ export default {
         this.charts[this.currChart].set('chart.data', candles);
       }
     },
+
     mounted(){
+      this.socket = new SockJS("http://192.168.1.66:8081/tradenet");
+      this.stompClient = Stomp.over(this.socket);
+      var self = this;
+      this.stompClient.connect(
+          {}, frame => {
+           frame['hi'];
+            this.stompClient.subscribe("/topic/live",  function (msg) {
+              var content = JSON.parse(msg.body)
+              if(content.ticker=="BTCUSDT"){
+                      let currCandles = self.charts[3].get('chart.data')[0];
+                      console.log(JSON.stringify(currCandles))
+                      console.log("current length = "+currCandles.length)
+                      let ohlc = [new Date(content['datetime']).getTime(),content['open'],content['high'],content['low'],content['close'],content['volume']];
+                      currCandles.push(ohlc)
+                      self.charts[3].set('chart.data', currCandles);
+                      console.log("new length = "+currCandles.length)
+                    }     
+            });
+          },
+          error => {
+            console.log(error);
+          }
+        );
      TradeNetAccountService.accountByEmail('ru@trade.net').then(res => {
           this.account=res
         }).catch(err => {

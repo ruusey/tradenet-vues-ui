@@ -6,13 +6,13 @@ axios.defaults.headers.common['Content-Type'] ='application/json;charset=utf-8;'
 class Api {
 
     constructor() {
-        this.base_url = 'http://192.168.1.240:8081/tradenet';
+        this.base_url = 'http://192.168.1.66:8081/tradenet';
     }
 
     getBaseUrl() {
        
 
-        return 'http://192.168.1.240:8081/tradenet';
+        return 'http://192.168.1.66:8081/tradenet';
     }
     setAuthHeader(guid){
         axios.defaults.headers.common['account-guid'] = guid;
