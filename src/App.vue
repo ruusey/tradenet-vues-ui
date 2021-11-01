@@ -98,7 +98,7 @@ export default {
     },
 
     mounted(){
-      this.socket = new SockJS("http://192.168.1.66:8081/tradenet");
+      this.socket = new SockJS("http://192.168.1.67:8081/tradenet");
       this.stompClient = Stomp.over(this.socket);
       var self = this;
       this.stompClient.connect(

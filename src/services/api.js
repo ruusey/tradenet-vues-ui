@@ -12,7 +12,7 @@ class Api {
     getBaseUrl() {
        
 
-        return 'http://192.168.1.66:8081/tradenet';
+        return 'http://192.168.1.67:8081/tradenet';
     }
     setAuthHeader(guid){
         axios.defaults.headers.common['account-guid'] = guid;
